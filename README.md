@@ -12,5 +12,5 @@ Replaces the forest giant model with chibidoki.
 - Chibidoki is the funniest vtuber of 2023: https://linktr.ee/chibidoki
 
 ## Updates:
-**[0.0.1]**  
+**[1.0.0]**  
 - Added model replacement.
