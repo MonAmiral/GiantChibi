@@ -25,5 +25,16 @@ namespace GiantChibi
 			_harmony.PatchAll();
 			Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} loaded");
 		}
+
+		[HarmonyPatch(typeof(ForestGiantAI))]
+		internal class ForestGiantAIPatch
+		{
+			[HarmonyPatch("Start")]
+			[HarmonyPostfix]
+			public static void StartPatch(ref PlayerControllerB __instance)
+			{
+				__instance.gameObject.AddComponent<ChibiModel>();
+			}
+		}
 	}
 }
