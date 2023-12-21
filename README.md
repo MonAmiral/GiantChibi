@@ -5,12 +5,12 @@
 
 ## Features:
 Replaces the forest giant model with chibidoki.
-- Works in multiplayer even if the other players do not have the mod installed, you'll just be the one to see the giant chibi!
-- Adds voicelines for when she spots you or grabs you.
+- Client mod: will work in multiplayer even if the other players do not have the mod installed.
+- Not implemented yet: voice lines for when she spots or grabs you!
 
 ## Credits:
 - Chibidoki is the funniest vtuber of 2023: https://linktr.ee/chibidoki
 
 ## Updates:
 **[0.0.1]**  
-- 
+- Added model replacement.
