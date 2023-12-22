@@ -14,3 +14,6 @@ Replaces the forest giant model with chibidoki.
 ## Updates:
 **[1.0.0]**  
 - Added model replacement.
+
+**[1.0.1]**  
+- Fixed error introduced with LC_API 3.0.0. It is now the required version.

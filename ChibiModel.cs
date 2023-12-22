@@ -20,38 +20,54 @@ namespace GiantChibi
 		{
 			Debug.Log("[MonAmiral] Replacing the Forest Giant model.");
 
-			// Disable the base model.
+			// Fetch the base model.
 			this.controller = this.GetComponentInChildren<ForestGiantAI>();
 			this.GetComponentInChildren<LODGroup>().enabled = false;
 			SkinnedMeshRenderer[] baseRenderers = this.GetComponentsInChildren<SkinnedMeshRenderer>();
-			foreach (SkinnedMeshRenderer renderer in baseRenderers)
+
+			GameObject modelInstance = null;
+			try
 			{
-				renderer.gameObject.SetActive(false);
+				// Fetch & prepare the new model.
+				GameObject modelPrefab = LC_API.BundleAPI.BundleLoader.GetLoadedAsset<GameObject>("assets/GiantChibi/ChibiGiant.fbx");
+				Texture texture = LC_API.BundleAPI.BundleLoader.GetLoadedAsset<Texture>("assets/GiantChibi/Chibmin_ALB.png");
+				Material material = new Material(baseRenderers[0].material);
+				material.SetTexture("_BaseColorMap", texture);
+				material.SetTexture("_BumpMap", null);
+
+				// Instantiate the model & assign the material.
+				modelInstance = GameObject.Instantiate(modelPrefab, this.transform);
+				modelInstance.transform.position = Vector3.zero;
+				modelInstance.transform.rotation = Quaternion.identity;
+
+				SkinnedMeshRenderer[] chibiRenderers = modelInstance.GetComponentsInChildren<SkinnedMeshRenderer>();
+				foreach (SkinnedMeshRenderer renderer in chibiRenderers)
+				{
+					renderer.gameObject.layer = baseRenderers[0].gameObject.layer;
+					renderer.material = material;
+				}
+
+				// Reassign the bones so that the animation perfectly matches.
+				Transform chibiArmature = modelInstance.transform.Find("metarig");
+				Transform giantArmature = this.transform.Find("FGiantModelContainer").Find("AnimContainer").Find("metarig");
+				this.ParentBoneRecursively(chibiArmature, giantArmature);
+
+				// Disable the base model only if everything went right.
+				foreach (SkinnedMeshRenderer renderer in baseRenderers)
+				{
+					renderer.gameObject.SetActive(false);
+				}
 			}
-
-			// Fetch & prepare the new model.
-			GameObject modelPrefab = LC_API.BundleAPI.BundleLoader.GetLoadedAsset<GameObject>("assets/GiantChibi/ChibiGiant.fbx");
-			Texture texture = LC_API.BundleAPI.BundleLoader.GetLoadedAsset<Texture>("assets/GiantChibi/Chibmin_ALB.png");
-			Material material = new Material(baseRenderers[0].material);
-			material.SetTexture("_BaseColorMap", texture);
-			material.SetTexture("_BumpMap", null);
-
-			// Instantiate the model & assign the material.
-			GameObject modelInstance = GameObject.Instantiate(modelPrefab, this.transform);
-			modelInstance.transform.position = Vector3.zero;
-			modelInstance.transform.rotation = Quaternion.identity;
-
-			SkinnedMeshRenderer[] chibiRenderers = modelInstance.GetComponentsInChildren<SkinnedMeshRenderer>();
-			foreach (SkinnedMeshRenderer renderer in chibiRenderers)
+			catch (System.Exception e)
 			{
-				renderer.gameObject.layer = baseRenderers[0].gameObject.layer;
-				renderer.material = material;
-			}
+				Debug.LogException(e);
 
-			// Reassign the bones so that the animation perfectly matches.
-			Transform chibiArmature = modelInstance.transform.Find("metarig");
-			Transform giantArmature = this.transform.Find("FGiantModelContainer").Find("AnimContainer").Find("metarig");
-			this.ParentBoneRecursively(chibiArmature, giantArmature);
+				if (modelInstance)
+				{
+					GameObject.Destroy(modelInstance);
+					GameObject.Destroy(this);
+				}
+			}
 		}
 
 		public void Update()
